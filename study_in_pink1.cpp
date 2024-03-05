@@ -379,12 +379,12 @@ int chaseTaxi(int &HP1, int &EXP1, int &HP2, int &EXP2, int E3)
 int checkPassword(const char *s, const char *email)
 {
     // TODO: Complete this function
-    std::stringstream ss;
+    stringstream ss;
     ss << s;
-    std::string s1 = ss.str();
-    std::stringstream ss1;
+    string s1 = ss.str();
+    stringstream ss1;
     ss1 << email;
-    std::string email1 = ss1.str();
+    string email1 = ss1.str();
     int temp = email1.find("@");
     string se = email1.substr(0, (temp));
     int count = s1.length();
@@ -412,9 +412,31 @@ int checkPassword(const char *s, const char *email)
 
 // Task 5
 
+// Create another array to save unique passwords.
+void removeDuplicates(const char *arr_pwds[], int size, string ans[])
+{
+    for (int i = 0; i < size; i++)
+    {
+        bool isDuplicate = 0;
+        for (int j = 0; j < size; j++)
+        {
+            if (arr_pwds[i] == ans[j])
+            {
+                isDuplicate = 1;
+                break;
+            }
+        }
+        if (!isDuplicate)
+        {
+            ans[i] = arr_pwds[i];
+        }
+    }
+}
+
 // find which passwords (TheMost) appear most frequently in arr_pwds
 int appearTheMost(const char *arr_pwds[], string save[], int num_pwds, int a[])
 {
+    // Find how many times the i-th element appear, store the time respectively in the array a;
     for (int i = 0; i < num_pwds; i++)
     {
         for (int j = 0; j < num_pwds; j++)
@@ -424,6 +446,7 @@ int appearTheMost(const char *arr_pwds[], string save[], int num_pwds, int a[])
         }
     }
 
+    // Compare the elements in array a to find the greatest number.
     int most = 0;
     for (int i = 0; i < num_pwds; i++)
     {
@@ -474,14 +497,14 @@ int placeOfTheMost(const char *arr_pwds[], int num_pwds, string ans)
 int findCorrectPassword(const char *arr_pwds[], int num_pwds)
 {
     // TODO: Complete this function
-
     // categorize passwords from the given array
-    string save[num_pwds];
-    int a[num_pwds];
-    int temp = 1;
-    for (int i = 0; i < num_pwds; i++)
+
+    string save[30];
+    int a[30];
+    for (int i = 0; i < 30; i++)
     {
-        for (int j = 0; j < num_pwds; j++)
+        int temp = 1;
+        for (int j = 0; j < 30; j++)
         {
             if (arr_pwds[i] == save[j])
             {
