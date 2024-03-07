@@ -376,37 +376,64 @@ int chaseTaxi(int &HP1, int &EXP1, int &HP2, int &EXP2, int E3)
 }
 
 // Task 4
+bool isSpecialChar(char c)
+{
+    return c == '@' || c == '#' || c == '%' || c == '$' || c == '!';
+}
+
 int checkPassword(const char *s, const char *email)
 {
-    // TODO: Complete this function
-    stringstream ss;
-    ss << s;
-    string s1 = ss.str();
-    stringstream ss1;
-    ss1 << email;
-    string email1 = ss1.str();
-    int temp = email1.find("@");
-    string se = email1.substr(0, (temp));
-    int count = s1.length();
-    if (count < 8)
+    string password = s;
+    string email1 = email;
+    // Check password length
+    if (password.length() < 8)
         return -1;
-    if (count > 20)
+    if (password.length() > 20)
         return -2;
-    int temp1 = s1.find(se);
-    if (temp1 != -1)
-        return -(300 + temp1);
-    for (int i = 0; i < (s1.length() - 2); i++)
+
+    // Extract username from email
+    string username;
+    int pos = 0;
+    while (pos < email1.length() && email1[pos] != '@')
     {
-        if ((s1[i + 2] == s1[i + 1]) && (s1[i + 1] == s1[i]))
+        username = username + email1[pos];
+        pos++;
+    }
+
+    // Check if username exists in password
+    int found = password.find(username);
+    if (found != -1)
+        return -(300 + found);
+
+    // Check for consecutive three identical characters
+    for (int i = 0; i < password.length() - 2; i++)
+    {
+        if (password[i] == password[i + 1] && password[i] == password[i + 2])
             return -(400 + i);
     }
-    if (s1.find("@") == -1 && s1.find("#") == -1 && s1.find("%") == -1 && s1.find("$") == -1 && s1.find("!") == -1)
-        return -5;
-    for (int i = 0; i < s1.length(); i++)
+
+    // Check for presence of special characters
+    bool hasSpecialChar = false;
+    for (char c : password)
     {
-        if (!(s1[i] >= '0' && s1[i] <= '9') && !(s1[i] >= 'a' && s1[i] <= 'z') && !(s1[i] >= 'A' && s1[i] <= 'Z') && s1[i] != '@' && s1[i] != '#' && s1[i] != '%' && s1[i] != '$' && s1[i] != '!')
+        if (isSpecialChar(c))
+        {
+            hasSpecialChar = true;
+            break;
+        }
+    }
+    if (!hasSpecialChar)
+        return -5;
+
+    // Check for invalid characters
+    for (int i = 0; i < password.length(); i++)
+    {
+        char c = password[i];
+        if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || isSpecialChar(c)))
             return i;
     }
+
+    // Password meets all criteria
     return -10;
 }
 
@@ -515,9 +542,6 @@ int findCorrectPassword(const char *arr_pwds[], int num_pwds)
         if (temp)
             save[i] = arr_pwds[i];
     }
-
-    // find which appear most
-    //
 
     return placeOfTheMost(arr_pwds, num_pwds, indentifyTheMost(num_pwds, save, a, appearTheMost(arr_pwds, save, num_pwds, a)));
 }
