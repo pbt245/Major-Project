@@ -405,7 +405,7 @@ int checkPassword(const char *s, const char *email)
     if (found != -1)
         return -(300 + found);
 
-    // Check for consecutive three identical characters
+    // Check for consecutive three similar characters
     for (int i = 0; i < password.length() - 2; i++)
     {
         if (password[i] == password[i + 1] && password[i] == password[i + 2])
@@ -439,111 +439,56 @@ int checkPassword(const char *s, const char *email)
 
 // Task 5
 
-// Create another array to save unique passwords.
-void removeDuplicates(const char *arr_pwds[], int size, string ans[])
-{
-    for (int i = 0; i < size; i++)
-    {
-        bool isDuplicate = 0;
-        for (int j = 0; j < size; j++)
-        {
-            if (arr_pwds[i] == ans[j])
-            {
-                isDuplicate = 1;
-                break;
-            }
-        }
-        if (!isDuplicate)
-        {
-            ans[i] = arr_pwds[i];
-        }
-    }
-}
-
 // find which passwords (TheMost) appear most frequently in arr_pwds
-int appearTheMost(const char *arr_pwds[], string save[], int num_pwds, int a[])
+struct Password
 {
-    // Find how many times the i-th element appear, store the time respectively in the array a;
-    for (int i = 0; i < num_pwds; i++)
-    {
-        for (int j = 0; j < num_pwds; j++)
-        {
-            if (arr_pwds[j] == save[i])
-                a[i]++;
-        }
-    }
-
-    // Compare the elements in array a to find the greatest number.
-    int most = 0;
-    for (int i = 0; i < num_pwds; i++)
-    {
-        if (a[i] > most)
-            most = a[i];
-    }
-    return most;
-}
-
-// identify the password (TheMost) that appears the most
-string indentifyTheMost(int num_pwds, string save[], int a[], int mymax)
-{
-    int digit = 0;
-    string ans;
-
-    for (int i = 0; i < num_pwds; i++)
-    {
-        if (a[i] == mymax)
-        {
-            if (digit == 0)
-            {
-                ans = save[i];
-                continue;
-            }
-            digit = save[i].size();
-            if (ans.size() < digit)
-                ans = save[i];
-        }
-    }
-    return ans;
-}
-
-// return the first place that TheMost appears
-int placeOfTheMost(const char *arr_pwds[], int num_pwds, string ans)
-{
-    int place;
-    for (int i = 0; i < num_pwds; i++)
-    {
-        if (arr_pwds[i] == ans)
-        {
-            place = i;
-            break;
-        }
-    }
-    return place;
-}
+    int len;
+    int pos;
+    int count;
+};
 
 int findCorrectPassword(const char *arr_pwds[], int num_pwds)
 {
-    // TODO: Complete this function
-    // categorize passwords from the given array
-
-    string save[30];
-    int a[30];
-    for (int i = 0; i < 30; i++)
+    string arr_pwds1[10000];
+    for (int i = 0; i < num_pwds; i++)
     {
-        int temp = 1;
-        for (int j = 0; j < 30; j++)
+        arr_pwds1[i] = arr_pwds[i];
+    }
+    Password pwds[10000] = {0};
+    for (int i = 0; i < num_pwds; i++)
+    {
+        pwds[i].pos = i;
+        pwds[i].len = arr_pwds1[i].size();
+        for (int j = 0; j < num_pwds; j++)
         {
-            if (arr_pwds[i] == save[j])
+            if (arr_pwds1[i] == arr_pwds1[j] && i > j)
             {
-                temp = 0;
+                pwds[i].count = -1;
                 break;
             }
+            if (arr_pwds1[i] == arr_pwds1[j])
+                pwds[i].count++;
         }
-        if (temp)
-            save[i] = arr_pwds[i];
     }
-
-    return placeOfTheMost(arr_pwds, num_pwds, indentifyTheMost(num_pwds, save, a, appearTheMost(arr_pwds, save, num_pwds, a)));
+    for (int i = 0; i < num_pwds - 1; i++)
+    {
+        for (int j = 0; j < num_pwds - i - 1; j++)
+        {
+            if (pwds[j].count > pwds[j + 1].count)
+                swap(pwds[j], pwds[j + 1]);
+            else if (pwds[j].count == pwds[j + 1].count)
+            {
+                if (pwds[j].len > pwds[j + 1].len)
+                    swap(pwds[j], pwds[j + 1]);
+                else if (pwds[j].len == pwds[j + 1].len)
+                {
+                    if (pwds[j].pos < pwds[j + 1].pos)
+                        swap(pwds[j], pwds[j + 1]);
+                }
+            }
+        }
+    }
+    return pwds[num_pwds - 1].pos;
 }
 
 ////////////////////////////////////////////////
